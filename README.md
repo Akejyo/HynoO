@@ -1,2 +1,3 @@
 # HynoO
-An accountless chat room based on React and Rust
+
+An accountless chat room based on Vite+React and Rust
