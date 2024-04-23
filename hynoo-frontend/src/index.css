@@ -22,3 +22,39 @@ h1 {
     padding: 2rem;
     text-align: center;
 }
+
+.room {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.room h2 {
+    padding-top: 1rem
+}
+
+.room .roomBox {
+    width: 70%;
+}
+
+.room .partingLine {
+    border-top: 1px solid #6b6b6b;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.room .message {
+    display: flex;
+}
+
+.room .name {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: chartreuse;
+    width: 10%;
+    border-right: 1px solid #6b6b6b;
+}
+
+.room .content {
+    width: 90%;
+    margin-left: 1rem;
+}
