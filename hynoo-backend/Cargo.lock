@@ -369,6 +369,8 @@ name = "hynoo-backend"
 version = "0.1.0"
 dependencies = [
  "futures",
+ "serde",
+ "serde_json",
  "tokio",
  "warp",
 ]

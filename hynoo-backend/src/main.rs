@@ -1,9 +1,16 @@
 use futures::{SinkExt, StreamExt};
+use serde::Serialize;
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use warp::ws::{Message, WebSocket};
 use warp::Filter;
+
+#[derive(Serialize)]
+struct MessageData {
+    username: String,
+    content: String,
+}
 type Users =
     Arc<Mutex<HashMap<String, tokio::sync::mpsc::UnboundedSender<Result<Message, warp::Error>>>>>;
 
@@ -13,17 +20,35 @@ async fn handle_connection(user_id: String, ws: WebSocket, users: Users) {
 
     users.lock().unwrap().insert(user_id.clone(), tx);
 
+    //when rx recive a message, combine it with usename and send json text {username,content} to client
     tokio::task::spawn(async move {
-        while let Some(message) = rx.recv().await {
-            user_ws_tx.send(message.unwrap()).await.unwrap();
+        while let Some(result) = rx.recv().await {
+            let message = match result {
+                Ok(msg) => msg.to_str().unwrap().to_string(),
+                Err(e) => {
+                    eprintln!("error {}", e);
+                    break;
+                }
+            };
+
+            let msg = MessageData {
+                username: "User1".to_string(),
+                content: message,
+            };
+            let json_msg = serde_json::to_string(&msg).unwrap();
+            let ws_msg = warp::ws::Message::text(json_msg);
+            user_ws_tx.send(ws_msg).await.unwrap();
         }
     });
 
+    //when ws recive a message, send it to all tx in users
     while let Some(result) = user_ws_rx.next().await {
         match result {
             Ok(msg) => {
-                for (_, user) in users.lock().unwrap().iter() {
-                    user.send(Ok(msg.clone())).unwrap();
+                for (username, user) in users.lock().unwrap().iter() {
+                    if username != &user_id {
+                        user.send(Ok(msg.clone())).unwrap();
+                    }
                 }
             }
             Err(e) => {

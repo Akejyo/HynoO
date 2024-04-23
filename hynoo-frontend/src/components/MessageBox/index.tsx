@@ -8,7 +8,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({ username, content }) => {
   return (
     <div className="message">
       <div className="name">{username}</div>
-      <div className="content">{content}</div>
+      <div className="content" style={{ whiteSpace: "pre-wrap" }}>
+        {content}
+      </div>
     </div>
   );
 };

@@ -54,7 +54,26 @@ h1 {
     border-right: 1px solid #6b6b6b;
 }
 
+.room .roomBox {
+    max-height: 60vh;
+    overflow: auto;
+}
+
 .room .content {
     width: 90%;
     margin-left: 1rem;
+}
+
+.room .input {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.room .input #message {
+    width: 50rem;
+    height: 10vh;
+    resize: none;
+    overflow: auto;
 }
