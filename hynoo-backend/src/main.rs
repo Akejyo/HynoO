@@ -2,7 +2,6 @@ use futures::stream::{SplitSink, SplitStream};
 use futures::{SinkExt, StreamExt};
 use serde::Serialize;
 use std::collections::HashMap;
-use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use warp::ws::{Message, WebSocket};
 use warp::Filter;
