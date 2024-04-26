@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import MessageBox from "../../components/MessageBox";
 
@@ -8,7 +8,7 @@ const Room = () => {
   const [messages, setMessages] = useState<
     { username: string; content: string }[]
   >([]);
-
+  const wsRef = useRef<WebSocket | null>(null);
   //Get room name
   if (roomName === undefined) return null;
   let name = roomName;
@@ -24,12 +24,12 @@ const Room = () => {
 
   //Connect to WebSocket
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:3030/chat");
-    ws.onopen = () => {
+    wsRef.current = new WebSocket("ws://localhost:3030/chat");
+    wsRef.current.onopen = () => {
       console.log("connected");
-      ws.send(`${username}`);
+      wsRef.current?.send(`${username}`);
     };
-    ws.onmessage = (e) => {
+    wsRef.current.onmessage = (e) => {
       const newMessage = JSON.parse(e.data);
       setMessages((oldMessages) => [...oldMessages, newMessage]);
     };
@@ -40,8 +40,11 @@ const Room = () => {
     const input = document.getElementById("message") as HTMLInputElement;
     const content = input.value;
     if (content === "") return;
-    const newMessage = { username: "User_tmp", content };
-    setMessages((oldMessages) => [...oldMessages, newMessage]);
+    const message = {
+      username: username,
+      content: content,
+    };
+    wsRef.current?.send(JSON.stringify(message));
     input.value = "";
   };
 
