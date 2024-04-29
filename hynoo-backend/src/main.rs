@@ -11,10 +11,6 @@ struct MessageData {
     username: String,
     content: String,
 }
-struct UserData {
-    username: String,
-    tx: tokio::sync::mpsc::UnboundedSender<Result<Message, warp::Error>>,
-}
 type Users =
     Arc<Mutex<HashMap<String, tokio::sync::mpsc::UnboundedSender<Result<Message, warp::Error>>>>>;
 type Rooms = Arc<Mutex<HashMap<String, Users>>>;
@@ -84,7 +80,7 @@ async fn handle_connection(
                 let room_id = v["room_id"].as_str().unwrap().to_string();
                 if rooms.lock().unwrap().contains_key(&room_id) {
                     for (roomname, users) in rooms.lock().unwrap().iter() {
-                        if (roomname != &room_id) {
+                        if roomname != &room_id {
                             continue;
                         }
                         for (_, user) in users.lock().unwrap().iter() {
