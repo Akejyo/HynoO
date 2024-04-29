@@ -27,7 +27,11 @@ const Room = () => {
     wsRef.current = new WebSocket("ws://localhost:3030/chat");
     wsRef.current.onopen = () => {
       console.log("connected");
-      wsRef.current?.send(`${username}`);
+      const message = {
+        room_id: roomName,
+        username: username,
+      };
+      wsRef.current?.send(JSON.stringify(message));
     };
     wsRef.current.onmessage = (e) => {
       const newMessage = JSON.parse(e.data);
@@ -41,6 +45,7 @@ const Room = () => {
     const content = input.value;
     if (content === "") return;
     const message = {
+      room_id: roomName,
       username: username,
       content: content,
     };
